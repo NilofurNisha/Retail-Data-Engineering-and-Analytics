@@ -10,7 +10,7 @@ generate insights about individual consumer behaviors and preferences, Recommend
  - Start Services
  - Run the scripts
 ## Local Installation
-Install tools given in `requirements.txt` and also refer to `conf` above for configuration.
+Install tools given in `requirements.txt` and refer `conf`.
 
 **Make sure you have the following installed:**
 - Hadoop
