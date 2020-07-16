@@ -1,0 +1,83 @@
+HBase:
+======
+
+Download f hbase-0.98.4-hadoop2-bin.tar.gz ,zookeeper-3.4.6.tar.gz and place them inside cd /home/hduser/install/
+
+1)Go to the below path.
+ cd /home/hduser/install/
+
+2) Extract the tarball,
+HBase installation
+---------------------------
+
+tar xvzf hbase-0.98.4-hadoop2-bin.tar.gz
+sudo mv hbase-0.98.4-hadoop2 /usr/local/hbase
+sudo chown -R hduser:hadoop /usr/local/hbase
+
+Zookeeper installation
+---------------------------
+tar xvzf zookeeper-3.4.6.tar.gz
+sudo mv zookeeper-3.4.6 /usr/local/zookeeper
+
+sudo chown -R hduser:hadoop /usr/local/zookeeper
+
+3) Zookeeper config
+
+cd /usr/local/zookeeper/conf
+mv zoo_sample.cfg zoo.cfg
+
+vi zoo.cfg
+dataDir=/usr/local/zookeeper/data
+
+Create the below dir for zookeeper
+mkdir /usr/local/zookeeper/data
+
+
+4) Start Zookeeper by running below command:
+cd /usr/local/zookeeper/bin
+./zkServer.sh start
+
+5) Edit hbase environment script
+cd /usr/local/hbase/conf
+echo 'export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_71' >> hbase-env.sh
+echo 'export HBASE_MANAGES_ZK=false' >> hbase-env.sh
+
+
+6) Edit the hbase-site.xml to set hbase distribution, hbase root data dir, zookeeper quorum and zk port.
+vi /usr/local/hbase/conf/hbase-site.xml
+
+<configuration>
+<property>
+<name>hbase.cluster.distributed</name>
+<value>true</value>
+</property>
+<property>
+<name>hbase.rootdir</name>
+<value>hdfs://localhost:54310/user/hduser/hbase</value>
+</property>
+<property>
+<name>hbase.zookeeper.quorum</name>
+<value>localhost</value>
+</property>
+<property>
+<name>hbase.zookeeper.property.clientPort</name>
+<value>2181</value>
+</property>
+<property>
+<name>hbase.zookeeper.property.dataDir</name>
+<value>/usr/local/zookeeper/data</value>
+</property>
+</configuration>
+
+This property is added to configure HBase with phoenix.
+<property>
+<name>hbase.regionserver.wal.codec</name>
+<value>org.apache.hadoop.hbase.regionserver.wal.IndexedWALEditCodec</value>
+</property>
+
+7)  start the hbase daemon
+start-hbase.sh
+
+8) Login hbase 
+hbase shell
+
