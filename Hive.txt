@@ -1,0 +1,128 @@
+Hive:
+====
+
+Download apache-hive-1.2.2-bin.tar.gz
+
+1) Copy the hive tar file to your home path (/home/hduser/install) and extract using below command
+
+cd /home/hduser/install/
+tar xvzf apache-hive-1.2.2-bin.tar.gz
+sudo mv apache-hive-1.2.2-bin /usr/local/hive
+
+2) create directories and give permissions
+
+hadoop fs -mkdir -p /user/hive/warehouse/
+hadoop fs -chmod g+w /user/hive/warehouse
+hadoop fs -mkdir -p /tmp
+hadoop fs -chmod g+w /tmp
+
+3)configure hive-site.xml
+$ cd $HIVE_HOME
+$ vi conf/hive-site.xml
+ 
+<configuration>
+
+<property>
+  <name>hive.aux.jars.path</name>
+  <value>file:///opt/mapr/hive/hive-<version>/lib/hive-hbase-handler-<version>-mapr.jar,
+file:///opt/mapr/hbase/hbase-<version>/lib/hbase-client-<version>-mapr.jar, file:///opt/mapr/hbase/hbase-<version>/lib/hbase-server-<version>-mapr.jar,file:///opt/mapr/hbase/hbase-<version>/lib/hbase-protocol-<version>-mapr.jar,file:///opt/mapr/zookeeper/zookeeper-<version>/zookeeper-<version>.jar</value>
+  <description>A comma separated list (with no spaces) of the jar files required for Hive-HBase integration</description>
+</property>
+
+<property>
+  <name>hbase.zookeeper.quorum</name>
+  <value>xx.xx.x.xxx,xx.xx.x.xxx,xx.xx.x.xxx</value>
+  <description>A comma separated list (with no spaces) of the IP addresses of all ZooKeeper servers in the cluster.</description>
+</property>
+
+<property>
+  <name>hbase.zookeeper.property.clientPort</name>
+  <value>5181</value>
+  <description>The Zookeeper client port. The MapR default clientPort is 5181.</description>
+</property>
+
+</configuration>
+
+
+
+Remote metastore configuration:
+===============================
+
+1.start mysql service
+
+create hiveuser and password in mysql for metastore connection
+
+2.log into mysql as root user
+
+mysql -u root -p
+Enter password: root
+
+create database metastore;USE metastore;
+
+SOURCE /usr/local/hive/scripts/metastore/upgrade/mysql/hive-schema-0.14.0.mysql.sql; 
+
+show tables; 
+
+GRANT all on *.* to 'hiveuser'@localhost identified by 'hivepassword'; 
+flush privileges; 
+
+quit;
+
+3. HIVE-SITE.XML configuration to connect to remote metastore
+
+*Copy the hive-site.xml config file to /usr/local/hive/conf
+cp /home/hduser/hive/hive-site.xml /usr/local/hive/conf/hive-site.xml 
+
+*Copy the dependent mysql connector jdbc jar to get hive connected with remote metastore
+cp -p /home/hduser/install/mysql-connector-java.jar /usr/local/hive/lib/
+
+*Below are the additions made in the hive-site.xml
+
+<property>
+<name>hive.metastore.uris</name>
+<value>thrift://localhost:9083</value>
+<description>IP address (or fully-qualified domain name) and port of the metastore host</description>
+< /property>
+<property>
+<name>javax.jdo.option.ConnectionURL</name>
+<value>jdbc:mysql://localhost/metastore</value>
+<description>the URL of the MySQL database</description>
+< /property>
+<property>
+<name>javax.jdo.option.ConnectionDriverName</name>
+<value>com.mysql.jdbc.Driver</value>
+</property>
+<property>
+<name>javax.jdo.option.ConnectionUserName</name>
+<value>hiveuser</value>
+</property>
+<property>
+<name>javax.jdo.option.ConnectionPassword</name>
+<value>hivepassword</value>
+</property>
+<property>
+<name>datanucleus.autoCreateSchema</name>
+< value>false</value>
+</property>
+<property>
+< name>hive.stats.dbclass</name>
+<value>jdbc:mysql</value>
+</property> 
+
+ 
+
+4.Running the services before starting hive session 
+
+hive --service metastore (leave the terminal as it is)
+or
+hive --service metastore & (&-runs as background service)
+
+
+Use the below command to start hive always
+==========================================
+
+$ sudo service mysqld start
+$ hive --service metastore
+
+Starting Hive CLI with remote metastore:
+$ hive
