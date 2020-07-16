@@ -1,0 +1,25 @@
+Phoenix:
+========
+
+Download  phoenix-4.6.0-HBase-0.98-bin.tar.gz
+
+1) Got to below path and untar file
+cd /home/hduser/install
+tar xvzf phoenix-4.6.0-HBase-0.98-bin.tar.gz
+sudo mv phoenix-4.6.0-HBase-0.98-bin /usr/local/phoenix
+sudo chown -R hduser:hadoop /usr/local/phoenix 
+
+Add below Jar files to hbase lib folder
+
+cd /usr/local/phoenix/
+cp phoenix-4.6.0-HBase-0.98-client-minimal.jar /usr/local/hbase/lib/
+cp phoenix-core-4.6.0-HBase-0.98.jar /usr/local/hbase/lib/ 
+
+Before starting Phoenix, make sure HBASE and Zookeeper are running with the below quorums 
+zkServer.sh start – to start zookeeper
+start-hbase.sh – to start hbase 
+
+Phoenix shell
+==============
+To start phoenix command line shell
+$ sqlline.py localhost 
