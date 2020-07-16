@@ -1,0 +1,32 @@
+Sqoop:
+======
+
+Download sqoop-1.4.6.bin__hadoop-2.0.4-alpha.tar.gz tar package and place it inside ~/install directory
+
+1.Untar the sqoop 1.4.6 tar package and move to the common directory and give the respective
+permissions.
+cd ~/install
+tar xvzf sqoop-1.4.6.bin__hadoop-2.0.4-alpha.tar.gz
+sudo mv sqoop-1.4.6.bin__hadoop-2.0.4-alpha /usr/local/sqoop
+
+2.Configuring Sqoop
+
+To configure Sqoop with Hadoop, you need to edit the sqoop-env.sh file, which is placed in the
+$SQOOP_HOME/conf directory. First of all, Redirect to Sqoop config directory and copy the template
+file using the following command:
+
+cd $SQOOP_HOME/conf
+mv sqoop-env-template.sh sqoop-env.sh
+echo 'export HADOOP_COMMON_HOME=/usr/local/hadoop' >> $SQOOP_HOME/conf/sqoop-env.sh
+echo 'export HADOOP_MAPRED_HOME=/usr/local/hadoop' >> $SQOOP_HOME/conf/sqoop-env.sh
+
+3.Copy mysql-connector-java
+Download Mysql connector jar and place it inside ~/install directory
+
+cp -p ~/install/mysql-connector-java.jar /usr/local/sqoop/ 
+
+4.Verifying Sqoop
+The following command is used to verify the Sqoop version.
+sqoop-version
+
+Before using sqoop,start the mysql service
